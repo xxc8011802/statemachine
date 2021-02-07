@@ -35,6 +35,7 @@ public class StateMachineConfig<S, E, H> {
         return this;
     }
 
+
     public void build(){
         StateConfiguration stateConfiguration= createOrGetStateConfiguration(tempCurrentState);
         stateConfiguration.configEventHandle(tempEvent,tempHandler);

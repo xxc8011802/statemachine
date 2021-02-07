@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Created by jetty on 2019/7/31.
+ * 提交
  */
 @Slf4j
 public class SubmitLeavePermitHandler implements Handler{
@@ -20,6 +21,7 @@ public class SubmitLeavePermitHandler implements Handler{
         leavePermit.setStatus("INIT");//设置为初始状态
         log.info("[{}],permit=[{}]", this.getClass().getSimpleName(), leavePermit);
         context.setData(LeavePermitContextConstants.LEAVE_PERMIT, leavePermit);
+        //提交完后是自动去触发领导审核事件
         stateMachine.fire(LeavePermitEvent.LEADER_PERMIT,context);
     }
 }

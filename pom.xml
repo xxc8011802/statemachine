@@ -11,6 +11,7 @@
     <modules>
         <module>statemachine-core</module>
         <module>statemachine-demo</module>
+        <module>statemachine-audit</module>
     </modules>
 
 

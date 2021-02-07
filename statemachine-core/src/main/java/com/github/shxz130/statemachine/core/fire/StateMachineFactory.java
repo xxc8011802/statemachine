@@ -10,6 +10,7 @@ import java.util.Map;
  */
 public final class StateMachineFactory {
 
+    //存储
     private static Map<String, StateMachine<Object, Object, Handler>> stateMachineMap = new HashMap<String, StateMachine<Object, Object, Handler>>();
 
 

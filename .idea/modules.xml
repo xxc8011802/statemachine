@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/statemachine.iml" filepath="$PROJECT_DIR$/statemachine.iml" />
+      <module fileurl="file://$PROJECT_DIR$/statemachine-core/statemachine-core.iml" filepath="$PROJECT_DIR$/statemachine-core/statemachine-core.iml" />
+      <module fileurl="file://$PROJECT_DIR$/statemachine-demo/statemachine-demo.iml" filepath="$PROJECT_DIR$/statemachine-demo/statemachine-demo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/statemachine-audit/statemachineaudit.iml" filepath="$PROJECT_DIR$/statemachine-audit/statemachineaudit.iml" />
+    </modules>
+  </component>
+</project>

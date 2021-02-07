@@ -7,15 +7,18 @@ import java.util.Map;
 
 /**
  * Created by jetty on 2019/7/31.
+ * 状态配置
  */
 
 public class StateConfiguration<S, E,H> {
 
     @Getter
-    private S currentState;
+    private S currentState;//当前状态初审审核
 
+    //绑定当前状态下 事件和处理方法的映射 初审审核通过事件和审核通过操作
     private Map<E,H> eventHandleMap;
 
+    //绑定当前状态下 事件和下一状态的映射  初审审核通过事件和复审审核
     private Map<E, S> nextStateMap;
 
     public StateConfiguration(S state) {
