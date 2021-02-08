@@ -15,7 +15,7 @@ public class AuditReviewWaitHandler implements Handler{
 
     public void handle(TransactionContext context, StateMachine stateMachine) {
        AuditPermit auditPermit=(AuditPermit)context.getData(AuditContextConstans.LEAVE_PERMIT);
-        auditPermit.setStatus("LEADER_PERMIT");
+        auditPermit.setStatus("等待复审审核");
         log.info("[{}],permit=[{}]", this.getClass().getSimpleName(),auditPermit);
         String auditReviewSuggestion=(String)context.getData(AuditContextConstans.AUDIT_REVIEW_SUGGESTION);
         //如果未审核，等待复审

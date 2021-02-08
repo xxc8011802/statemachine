@@ -16,7 +16,7 @@ public class AuditAssignWaitHandler implements Handler{
 
     public void handle(TransactionContext context, StateMachine stateMachine) {
        AuditPermit auditPermit=(AuditPermit)context.getData(AuditContextConstans.LEAVE_PERMIT);
-        auditPermit.setStatus("LEADER_PERMIT");
+        auditPermit.setStatus("等待分配");
         log.info("[{}],permit=[{}]", this.getClass().getSimpleName(),auditPermit);
         String auditAssign=(String)context.getData(AuditContextConstans.AUDIT_ASSIGN);
         //如果未分配，等待分配

@@ -8,6 +8,9 @@ import config.handler.*;
 
 /**
  * Created by jetty on 2019/7/31.
+ *
+ *
+ *
  */
 public class StatemachineInit
 {
@@ -25,76 +28,62 @@ public class StatemachineInit
         stateMachineConfig.from(AuditState.SUBMIT_AUDIT)//初始状态，提交审核
                 .permit(AuditEvent.SUBMIT_AUDIT) //作家提交审核事件
                 .handle(new SubmitAuditHandler())//提交审核操作
-                .to(AuditState.AUDIT_ASSIGN_FIRST) //提交后，请求审核分配初审
+                .to(AuditState.AUDIT_ASSIGN) //提交后，请求审核分配初审
                  .build();
 
-        stateMachineConfig.from(AuditState.AUDIT_ASSIGN_FIRST) //编辑 分配审核人员状态
+        //该状态转换是提交时自动触发的
+        stateMachineConfig.from(AuditState.AUDIT_ASSIGN) //分配审核人员状态
                 .permit(AuditEvent.AUDIT_ASSIGN)  //审核分配事件
-                .handle(new AuditAssignWaitHandler())     //等待审核人员分配处理
-                .to(AuditState.AUDIT_ASSIGN_FIRST)    //下一状态，初审状态
+                .handle(new AuditAssignWaitHandler())     //等待分配审核人员
+                .to(AuditState.AUDIT_ASSIGN)    //下一状态，还在审核分配状态
                 .build();
 
-        stateMachineConfig.from(AuditState.AUDIT_ASSIGN_FIRST) //编辑 分配审核人员状态
-            .permit(AuditEvent.AUDIT_ASSIGN)  //审核分配事件
-            .handle(new AuditAssignWaitHandler())     //等待审核人员分配处理
-            .to(AuditState.AUDIT_ASSIGN_REVIEW)    //下一状态，初审状态
-            .build();
-
-        stateMachineConfig.from(AuditState.AUDIT_ASSIGN) //编辑 分配审核人员状态
-            .permit(AuditEvent.AUDIT_ASSIGN_FIRST_TRUE)  //审核分配事件
-            .handle(new AuditAssignFirstHandler())     //审核人员分配处理
+        //分配者分配审核人员
+        stateMachineConfig.from(AuditState.AUDIT_ASSIGN) //编辑分配初审审核人员状态
+            .permit(AuditEvent.AUDIT_ASSIGN_FINISH)  //审核分配完成事件
+            .handle(new AuditAssignFinishHandler())     //审核分配后等待初审状态
             .to(AuditState.AUDIT_FIRST)    //下一状态，初审状态
             .build();
 
-        stateMachineConfig.from(AuditState.AUDIT_FIRST) //初审状态
-            .permit(AuditEvent.AUDIT_FIRST)  //等待初审
-            .handle(new AuditAssignFirstHandler())     //审核人员分配处理
+        //等待初审审核人员审核
+        stateMachineConfig.from(AuditState.AUDIT_FIRST) //初审审核状态
+            .permit(AuditEvent.AUDIT_FIRST)  //等待初审审核
+            .handle(new AuditWaitHandler())     //等待审核
             .to(AuditState.AUDIT_FIRST)    //下一状态，初审状态
             .build();
 
+        //初审审核通过分配，下一状态的跳转在
         stateMachineConfig.from(AuditState.AUDIT_FIRST) //初审状态
             .permit(AuditEvent.AUDIT_FIRST_AGREE)  //初审审核通过
-            .handle(new AuditReviewWaitHandler())     //等待复审
+            .handle(new AuditFirstSuccessHandler())     //初审通过，根据是否分配复审人员判断是走到复审状态还是主站审核状态
+            .build();
+
+        //等待复审
+        stateMachineConfig.from(AuditState.AUDIT_REVIEW) //复审状态
+            .permit(AuditEvent.AUDIT_REVIEW)  //等待复审审核
+            .handle(new AuditWaitHandler())     //
             .to(AuditState.AUDIT_REVIEW)    //下一状态，复审状态
             .build();
 
-        stateMachineConfig.from(AuditState.AUDIT_FIRST) //初审状态
-            .permit(AuditEvent.AUDIT_FIRST_AGREE_WITHOUT_REVIEW)  //初审审核通过且未分配复审
-            .handle(new AuditReviewWaitHandler())     //等待主站审核
-            .to(AuditState.AUDIT_REVIEW)    //下一状态，主站审核状态
+        //复审通过自动触发走到等待主站审核流程
+        stateMachineConfig.from(AuditState.AUDIT_REVIEW) //复审状态
+            .permit(AuditEvent.AUDIT_REVIEW_AGREE)  //等待复审审核
+            .handle(new AuditReviewSuccessHandler())     //
+            .to(AuditState.AUDIT_MIGU)    //下一状态，复审状态
             .build();
 
-        stateMachineConfig.from(AuditState.AUDIT_FIRST) //初审状态
-            .permit(AuditEvent.AUDIT_FIRST_REJECT)  //初审驳回
-            .handle(new AuditFailHandler())     //审核人员分配处理
-            .build();//驳回后则结束
+        //等待主站审核
+        stateMachineConfig.from(AuditState.AUDIT_MIGU) //主站审核状态
+            .permit(AuditEvent.AUDIT_MIGU)  //等待主站审核审核
+            .handle(new AuditWaitHandler())     //
+            .to(AuditState.AUDIT_MIGU)    //下一状态，主站审核状态
+            .build();
 
-
-
-
-
-        /*stateMachineConfig.from(LeavePermitState.LEADER_PERMIT) //领导审批
-                .permit(LeavePermitEvent.LEADER_PERMIT_AGREE)   //领导同意
-                .handle(new CeoPermitHandler())                 //领导同意之后CEO审批
-                .to(LeavePermitState.CEO_PERMIT)                //ceo审批
-                .build();
-
-        stateMachineConfig.from(LeavePermitState.LEADER_PERMIT)  //领导审批
-                .permit(LeavePermitEvent.LEADER_PERMIT_DISAGREE) //领导不同意
-                .handle(new PermitFailHandler())                //假条失败
-                .build();
-
-        stateMachineConfig.from(LeavePermitState.CEO_PERMIT)   //CEO审批
-                .permit(LeavePermitEvent.CEO_PERMIT_AGREE)      //ceo审批同意
-                .handle(new PermitSuccessHandler())             //假条成功
-                .build();
-
-
-        stateMachineConfig.from(LeavePermitState.CEO_PERMIT)       //ceo审批
-                .handle(new PermitFailHandler())                //ceo审批不通过
-                .permit(LeavePermitEvent.CEO_PERMIT_DISAGREE)      //假条失败
-                .build();*/
-
+        //主站审核通过结束
+        stateMachineConfig.from(AuditState.AUDIT_MIGU)   //主站审核
+            .permit(AuditEvent.AUDIT_MIGU_AGREE)         //主站审核通过
+            .handle(new AuditMiguSuccessHandler())       //结束
+            .build();
         return new StateMachine(stateMachineConfig);
     }
 

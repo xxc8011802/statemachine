@@ -10,6 +10,9 @@ public class AuditContextConstans extends BaseStateMachineKey
     //已分配了审核人员
     public static final String AUDIT_ASSIGN="AUDIT_ASSIGN";
 
+    //已分配了复审审核人员
+    public static final String AUDIT_ASSIGN_REVIEW="AUDIT_ASSIGN_REVIEW";
+
     //初审审核意见
     public static final String AUDIT_FIRST_SUGGESTION="AUDIT_FIRST_SUGGESTION";
 

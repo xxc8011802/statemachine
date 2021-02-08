@@ -15,7 +15,7 @@ public class AuditMiguWaitHandler implements Handler{
 
     public void handle(TransactionContext context, StateMachine stateMachine) {
        AuditPermit auditPermit=(AuditPermit)context.getData(AuditContextConstans.LEAVE_PERMIT);
-        auditPermit.setStatus("LEADER_PERMIT");
+        auditPermit.setStatus("等待主站审核");
         log.info("[{}],permit=[{}]", this.getClass().getSimpleName(),auditPermit);
         String auditMiguSuggestion=(String)context.getData(AuditContextConstans.AUDIT_MIGU_SUGGESTION);
         //如果未审核，等待主站审核
